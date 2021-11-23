@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- ///////////////////////////////////////////////// -->
+    <color name="background">#d7d7c1</color>
+    <color name="cells_background">#888888</color>
+    <color name="empty_cell">#A9A9A9</color>
+    <color name="cell_1">#ebebe0</color>
+    <color name="cell_2">#ffe6b3</color>
+    <color name="cell_4">#ffd480</color>
+    <color name="cell_8">#ffbb33</color>
+    <color name="cell_16">#ff4d4d</color>
+    <color name="cell_32">#ff8080</color>
+    <color name="cell_64">#ff1a1a</color>
+    <color name="cell_128">#ffff4d</color>
+    <color name="cell_256">#ffff1a</color>
+    <color name="cell_512">#ff9900</color>
+<!-- ///////////////////////////////////////////////// -->
+
+<!-- ///////////////////////////////////////////////// -->
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+</resources>
