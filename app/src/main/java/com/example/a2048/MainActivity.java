@@ -16,6 +16,7 @@ import java.util.Random;
 public class MainActivity extends AppCompatActivity implements
         GestureDetector.OnGestureListener {
 
+    int score = 0;
 
     GestureDetectorCompat mDetector;
 
@@ -39,7 +40,7 @@ public class MainActivity extends AppCompatActivity implements
         identifyButtons();
 
         generateCell();
-
+        applyEasySort(gameMap);
     }
 
     private void identifyButtons() {
@@ -92,9 +93,11 @@ public class MainActivity extends AppCompatActivity implements
 
                     if ( v2or4 < 95 ) {
                         updateCell(rX,rY,2);
+                        score += 2;
                         break;
                     } else {
                         updateCell(rX,rY,4);
+                        score += 4;
                         break;
                     }
                 }
@@ -158,18 +161,10 @@ public class MainActivity extends AppCompatActivity implements
 
         int[][] easySort = new int[4][4];
 
-        System.out.println("GAME STATUS UNTOUCHED");
-        for (int[] ints : gameMap) {
-            for (int anInt : ints) {
-                System.out.print(anInt + "  ");
-            }
-            System.out.println();
-        }
-
         switch (direction) {
             case "N":
                 for (int x = 0; x < 4 ; x++) {
-                    for ( int y = 0 ; y < 4 ; y++ ) easySort[x][y] = gameMap[y][x];
+                    for ( int y = 0 ; y < 4 ; y++ ) easySort[x][y] = gameMap[y][3-x];
                 }
                 break;
             case "E":
@@ -187,23 +182,7 @@ public class MainActivity extends AppCompatActivity implements
                 break;
         }
 
-        System.out.println("EASY SORT UNPUSHED");
-        for (int[] ints : easySort) {
-            for (int anInt : ints) {
-                System.out.print(anInt + "  ");
-            }
-            System.out.println();
-        }
-
         linearMovement(easySort);
-
-        System.out.println("EASY SORT PUSHED");
-        for (int[] ints : easySort) {
-            for (int anInt : ints) {
-                System.out.print(anInt + "  ");
-            }
-            System.out.println();
-        }
 
         int[][] finalEasySort = new int[4][4];
 
@@ -220,7 +199,7 @@ public class MainActivity extends AppCompatActivity implements
                 break;
             case "S":
                 for (int x = 0; x < 4 ; x++) {
-                    for ( int y = 0 ; y < 4 ; y++ ) finalEasySort[x][y] = easySort[y][x];
+                    for ( int y = 0 ; y < 4 ; y++ ) finalEasySort[x][y] = easySort[y][3-x];
                 }
                 break;
             case "W":
@@ -228,19 +207,7 @@ public class MainActivity extends AppCompatActivity implements
                 break;
         }
 
-        System.out.println("EASY SORT REFORMATED");
-        for (int[] ints : finalEasySort) {
-            for (int anInt : ints) {
-                System.out.print(anInt + "  ");
-            }
-            System.out.println();
-        }
-
         applyEasySort(finalEasySort);
-
-        // PAGINA 17 CUADERNILLO
-
-
 
     }
 
@@ -288,7 +255,7 @@ public class MainActivity extends AppCompatActivity implements
 
                 for ( int i = 0; i < 4 ; i++) {
                     if ( i != 0 ) {
-                        if ( move[i-1] == move[i] && !cellsFusionated[i-1] ) {
+                        if ( move[i-1] == move[i] && cellsFusionated[i-1] == false ) {
                             move[i-1] += move[i-1];
                             move[i] = 0;
                             cellsFusionated[i-1] = true;
