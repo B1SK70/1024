@@ -17,29 +17,17 @@ public class MainActivity extends AppCompatActivity implements
         GestureDetector.OnGestureListener {
 
 
-    int[][] cellsMap = new int[][]{
-            {0,0,0,0},
-            {0,0,0,0},
-            {0,0,0,0},
-            {0,0,0,0}
-    };
     GestureDetectorCompat mDetector;
 
-    TextView b00, b10, b20, b30, b01, b11, b21, b31, b02, b12, b22, b32, b03, b13, b23, b33;
-    TextView[] cells;
+    TextView c00, c10, c20, c30, c01, c11, c21, c31, c02, c12, c22, c32, c03, c13, c23, c33;
+    TextView[][] cellsMap;
 
-    int color2 = R.color.cell_2;
-    int color4 = R.color.cell_4;
-    int color8 = R.color.cell_8;
-    int color16 = R.color.cell_16;
-    int color32 = R.color.cell_32;
-    int color64 = R.color.cell_64;
-    int color128 = R.color.cell_128;
-    int color256 = R.color.cell_256;
-    int color512 = R.color.cell_512;
-    /*int color1024 = R.color.cell_2;
-    int color2048 = R.color.cell_2;*/
-
+    int[][] gameMap = new int[][]{
+            {0, 0, 0, 0},
+            {0, 0, 0, 0},
+            {0, 0, 0, 0},
+            {0, 0, 0, 0}
+    };
 
 
     @Override
@@ -55,107 +43,99 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private void identifyButtons() {
-        b00 = (TextView) findViewById(R.id.button00);
-        b10 = (TextView) findViewById(R.id.button10);
-        b20 = (TextView) findViewById(R.id.button20);
-        b30 = (TextView) findViewById(R.id.button30);
-        b01 = (TextView) findViewById(R.id.button01);
-        b11 = (TextView) findViewById(R.id.button11);
-        b21 = (TextView) findViewById(R.id.button21);
-        b31 = (TextView) findViewById(R.id.button31);
-        b02 = (TextView) findViewById(R.id.button02);
-        b12 = (TextView) findViewById(R.id.button12);
-        b22 = (TextView) findViewById(R.id.button22);
-        b32 = (TextView) findViewById(R.id.button32);
-        b03 = (TextView) findViewById(R.id.button03);
-        b13 = (TextView) findViewById(R.id.button13);
-        b23 = (TextView) findViewById(R.id.button23);
-        b33 = (TextView) findViewById(R.id.button33);
+        c00 = (TextView) findViewById(R.id.button00);
+        c10 = (TextView) findViewById(R.id.button10);
+        c20 = (TextView) findViewById(R.id.button20);
+        c30 = (TextView) findViewById(R.id.button30);
+        c01 = (TextView) findViewById(R.id.button01);
+        c11 = (TextView) findViewById(R.id.button11);
+        c21 = (TextView) findViewById(R.id.button21);
+        c31 = (TextView) findViewById(R.id.button31);
+        c02 = (TextView) findViewById(R.id.button02);
+        c12 = (TextView) findViewById(R.id.button12);
+        c22 = (TextView) findViewById(R.id.button22);
+        c32 = (TextView) findViewById(R.id.button32);
+        c03 = (TextView) findViewById(R.id.button03);
+        c13 = (TextView) findViewById(R.id.button13);
+        c23 = (TextView) findViewById(R.id.button23);
+        c33 = (TextView) findViewById(R.id.button33);
 
-        cells = new TextView[]{b00, b01, b02, b03, b10, b11, b12, b13, b20, b21, b22, b23, b30, b31, b32, b33};
+        cellsMap = new TextView[][]{
+                {c00, c01, c02, c03},
+                {c10, c11, c12, c13},
+                {c20, c21, c22, c23},
+                {c30, c31, c32, c33}
+        };
     }
 
     private void generateCell() {
 
-        Random r = new Random();
-        int low = 0;
-        int high = 16;
-        int randomCell = r.nextInt(high-low) + low;
-
-
-        //Actual game state
-        int [][]cellsData = detectCells();
-
-        //Spot a empty cell
-        boolean randomCellIsAvailable = false;
-        while (!randomCellIsAvailable) {
-
-            //Check if there's an empty cell left
-            boolean cellAvailable = false;
-            for (int i = 0 ; i <= 3 ; i++) {
-                for(int y = 0 ; y <= 3 ; y++) {
-                    if (cellsData[i][y] == 0 ) cellAvailable = true;
-                }
-            }
-
-            if (cellAvailable) {
-                //Check if the randomly selected cell is empty
-                if ( cellsData[ randomCell / 4] [ randomCell % 4 ] == 0 ) {
-                    randomCellIsAvailable = true;
-                } else {
-                    randomCell = r.nextInt(high - low) + low;
-                }
-
-            } else {
-                System.out.println("GAME OVER");
-                break;
+        boolean spaceAvailable = false;
+        for (int[] gameRow : gameMap ) {
+            for ( int cellValue : gameRow) {
+                if (cellValue == 0) spaceAvailable = true;
             }
         }
 
+        if (spaceAvailable) {
 
-        cells[randomCell].setText("2");
-        cells[randomCell].setBackgroundColor(getResources().getColor(R.color.cell_2));
+            while (true) {
+                Random r = new Random();
+                int randomCell = r.nextInt(16);
+
+                int rX = randomCell / 4;
+                int rY = randomCell % 4;
+
+                if ( gameMap[rX][rY] == 0 ) {
+
+                    int v2or4 = new Random().nextInt(100);
+
+                    if ( v2or4 < 95 ) {
+                        updateCell(rX,rY,2);
+                        break;
+                    } else {
+                        updateCell(rX,rY,4);
+                        break;
+                    }
+                }
+            }
+
+        } else System.out.println("GAME OVER");
+
     }
 
-    // ---------------------------------------
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event){
-        if (this.mDetector.onTouchEvent(event)) {
-            return true;
-        }
-        return super.onTouchEvent(event);
-    }
     @Override
     public boolean onFling(MotionEvent e1, MotionEvent e2, float v, float v1) {
-        //Axis movement
         double XDisplacement = e2.getX() - e1.getX();
         double YDisplacement = e2.getY() - e1.getY();
 
-        //Pass every axis movement to positive values
         boolean right = false;
-        if ( XDisplacement > 0 ) {
+        if (XDisplacement > 0) {
             right = true;
         } else XDisplacement = -XDisplacement;
 
         boolean up = true;
-        if ( YDisplacement > 0 ) {
+        if (YDisplacement > 0) {
             up = false;
         } else YDisplacement = -YDisplacement;
 
-        //Move cells
-        if ( XDisplacement > YDisplacement + 200) {
+        String direction = "N";
+
+        if (XDisplacement > YDisplacement + 200) {
             if (right) {
-                moveCells(22);
-            } else moveCells(21);
+                direction = "E";
+            } else direction = "W";
         } else if (YDisplacement > XDisplacement + 200) {
             if (up) {
-                moveCells(19);
-            } else moveCells(20);
+                direction = "N";
+            } else direction = "S";
         }
+
+        moveCells(direction);
+        generateCell();
+
         return true;
     }
-
 
 
     @Override
@@ -165,157 +145,207 @@ public class MainActivity extends AppCompatActivity implements
 
     }
 
-
-
-    //moveCells(keyCode); 19Up,20Down,21West,22East
-    //generateCell();
-
     // ---------------------------------------
 
+    private void updateCell(int x, int y, int newValue) {
+        gameMap[x][y] = newValue;
 
-    public int[][] detectCells() {
-
-        int[][] coordsData = new int[4][4];
-
-        for (TextView cell : cells) {
-            String cellText = (String) cell.getText();
-            if (cellText != null && cellText != "") {
-
-                String cellId = getResources().getResourceEntryName( cell.getId() );
-                String cellCords = cellId.split("button")[1];
-
-                int cellX = Integer.parseInt(cellCords.split("")[0]);
-                int cellY = Integer.parseInt(cellCords.split("")[1]);
-
-                coordsData[cellX][cellY] = Integer.parseInt((String) cell.getText());
-
-            }
-        }
-        return coordsData;
+        cellsMap[x][y].setText(String.valueOf(newValue));
+        cellsMap[x][y].setBackgroundColor(getNumberColor(newValue));
     }
 
-    public void moveCells( int direction ) {
-        //MOVEMENT KEYCODES
-        //  N --> 19
-        //  S --> 20
-        //  W --> 21
-        //  E --> 22
+    public void moveCells(String direction) {
 
-        int[][] cells = detectCells();
+        int[][] easySort = new int[4][4];
 
-        for (int x = 0 ; x <= 3 ; x++ ) {
-            for (int y = 0 ; y <= 3 ; y++ ) {
+        System.out.println("GAME STATUS UNTOUCHED");
+        for (int[] ints : gameMap) {
+            for (int anInt : ints) {
+                System.out.print(anInt + "  ");
+            }
+            System.out.println();
+        }
 
-                if ( cells[x][y] != 0 ) {
+        switch (direction) {
+            case "N":
+                for (int x = 0; x < 4 ; x++) {
+                    for ( int y = 0 ; y < 4 ; y++ ) easySort[x][y] = gameMap[y][x];
+                }
+                break;
+            case "E":
+                for (int x = 0; x < 4 ; x++) {
+                    for ( int y = 0 ; y < 4 ; y++ ) easySort[x][y] = gameMap[x][3-y];
+                }
+                break;
+            case "S":
+                for (int x = 0; x < 4 ; x++) {
+                    for ( int y = 0 ; y < 4 ; y++ ) easySort[x][y] = gameMap[3-y][x];
+                }
+                break;
+            case "W":
+                easySort = gameMap;
+                break;
+        }
 
-                    int [] cellData = {x,y,cells[x][y],direction};
-                    //x , y , value, direction
+        System.out.println("EASY SORT UNPUSHED");
+        for (int[] ints : easySort) {
+            for (int anInt : ints) {
+                System.out.print(anInt + "  ");
+            }
+            System.out.println();
+        }
 
-                    switch (direction) {
-                        case (19):
-                            if (x != 0  && cells[x-1][y] == 0 ) {
-                                moveCell(cellData);
-                            }
-                            break;
-                        case (20):
-                            if (x != 3  && cells[x+1][y] == 0 ) {
-                                moveCell(cellData);
-                            }
-                            break;
-                        case (21):
-                            if (y != 0  && cells[x][y-1] == 0 ) {
-                                moveCell(cellData);
-                            }
-                            break;
-                        case (22):
-                            if (y != 3  && cells[x][y+1] == 0 ) {
-                                moveCell(cellData);
-                            }
-                            break;
+        linearMovement(easySort);
+
+        System.out.println("EASY SORT PUSHED");
+        for (int[] ints : easySort) {
+            for (int anInt : ints) {
+                System.out.print(anInt + "  ");
+            }
+            System.out.println();
+        }
+
+        int[][] finalEasySort = new int[4][4];
+
+        switch (direction) {
+            case "N":
+                for (int x = 0; x < 4 ; x++) {
+                    for ( int y = 0 ; y < 4 ; y++ ) finalEasySort[x][y] = easySort[3-y][x];
+                }
+                break;
+            case "E":
+                for (int x = 0; x < 4 ; x++) {
+                    for ( int y = 0 ; y < 4 ; y++ ) finalEasySort[x][y] = easySort[x][3-y];
+                }
+                break;
+            case "S":
+                for (int x = 0; x < 4 ; x++) {
+                    for ( int y = 0 ; y < 4 ; y++ ) finalEasySort[x][y] = easySort[y][x];
+                }
+                break;
+            case "W":
+                finalEasySort = easySort;
+                break;
+        }
+
+        System.out.println("EASY SORT REFORMATED");
+        for (int[] ints : finalEasySort) {
+            for (int anInt : ints) {
+                System.out.print(anInt + "  ");
+            }
+            System.out.println();
+        }
+
+        applyEasySort(finalEasySort);
+
+        // PAGINA 17 CUADERNILLO
+
+
+
+    }
+
+    private int getNumberColor(int value) {
+
+        switch (value) {
+            case 2:
+                return getResources().getColor(R.color.cell_2);
+            case 4:
+                return getResources().getColor(R.color.cell_4);
+            case 8:
+                return getResources().getColor(R.color.cell_8);
+            case 16:
+                return getResources().getColor(R.color.cell_16);
+            case 32:
+                return getResources().getColor(R.color.cell_32);
+            case 64:
+                return getResources().getColor(R.color.cell_64);
+            case 128:
+                return getResources().getColor(R.color.cell_128);
+            case 256:
+                return getResources().getColor(R.color.cell_256);
+            case 512:
+                return getResources().getColor(R.color.cell_512);
+            /*case 1024:
+                return getResources().getColor(R.color.cell_1024);
+            case 2048:
+                return getResources().getColor(R.color.cell_2048);*/
+            default:
+                return getResources().getColor(R.color.empty_cell);
+        }
+
+    }
+
+    private void linearMovement( int[][] easySort ){
+
+        for (int[] move : easySort) {
+
+            boolean[] cellsFusionated = new boolean[4];
+
+            boolean actionPerformed = true;
+            while (actionPerformed) {
+
+                actionPerformed = false;
+
+                for ( int i = 0; i < 4 ; i++) {
+                    if ( i != 0 ) {
+                        if ( move[i-1] == move[i] && !cellsFusionated[i-1] ) {
+                            move[i-1] += move[i-1];
+                            move[i] = 0;
+                            cellsFusionated[i-1] = true;
+                            actionPerformed = true;
+                        } else if ( move[i] != 0 && move[i-1] == 0 ) {
+                            move[i-1] = move[i];
+                            move[i] = 0;
+                            cellsFusionated[i-1] = cellsFusionated[i];
+                            actionPerformed = true;
+                        }
                     }
                 }
             }
         }
-        generateCell();
     }
 
-    public void moveCell(int[] cellData) {
-        //x , y , value, direction
-
-        TextView oldCell = cells[(4*cellData[0] + cellData[1])];
-        oldCell.setText("");
-        oldCell.setBackgroundResource(R.color.empty_cell);
-
-        TextView newCell = cells[(4*cellData[0] + cellData[1])];
-        switch (cellData[3]) {
-            case (19):
-                newCell = cells[(4*cellData[0]-4 + cellData[1])];
-                break;
-            case (20):
-                newCell = cells[(4*cellData[0]+4 + cellData[1])];
-                break;
-            case (21):
-                newCell = cells[(4*cellData[0] + cellData[1]-1)];
-                break;
-            case (22):
-                newCell = cells[(4*cellData[0] + cellData[1]+1)];
-                break;
-        }
-
-        newCell.setText(String.valueOf(cellData[2]));
-        newCell.setBackgroundResource(getStyle(cellData[2]));
-
-    }
-
-    public int getStyle(int value) {
-
-        switch (value) {
-            case 2:
-                return color2;
-            case 4:
-                return color4;
-            case 8:
-                return color8;
-            case 16:
-                return color16;
-            case 32:
-                return color32;
-            case 64:
-                return color64;
-            case 128:
-                return color128;
-            case 256:
-                return color256;
-            case 512:
-                return color512;
-            default:
-                return R.color.empty_cell;
+    private void applyEasySort(int[][] easySort) {
+        for (int x = 0 ; x < 4 ; x++) {
+            for (int y = 0 ; y < 4 ; y++) {
+                updateCell(x,y,easySort[x][y]);
+            }
         }
 
     }
-
-
 
 
     // FORCED OVERRIDES  --IGNORE
     @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (this.mDetector.onTouchEvent(event)) {
+            return true;
+        }
+        return super.onTouchEvent(event);
+    }
+
+    @Override
     public boolean onDown(MotionEvent motionEvent) {
         return false;
     }
+
     @Override
     public void onShowPress(MotionEvent motionEvent) {
 
     }
+
     @Override
     public boolean onSingleTapUp(MotionEvent motionEvent) {
         return false;
     }
+
     @Override
     public boolean onScroll(MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1) {
         return false;
     }
+
     @Override
     public void onLongPress(MotionEvent motionEvent) {
 
     }
-    }
+}
