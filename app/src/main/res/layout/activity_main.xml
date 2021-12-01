@@ -6,12 +6,23 @@
     android:layout_height="match_parent"
     tools:context="com.example.a2048.MainActivity">
 
-    <GridLayout
+    <RelativeLayout
         android:layout_width="362dp"
         android:layout_height="514dp"
         android:background="@color/background"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
+
+        <Button
+            android:id="@+id/rewind_move"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="39dp"
+            android:layout_marginEnd="30dp"
+            android:background="@drawable/rewind_move"
+            tools:ignore="SpeakableTextPresentCheck" />
 
         <GridLayout
             android:layout_width="match_parent"
@@ -250,5 +261,26 @@
                 android:gravity="center"
                 android:background="@color/empty_cell" />
         </GridLayout>
-    </GridLayout>
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="27dp"
+            android:layout_marginTop="59dp"
+            android:text="Score: " />
+
+        <TextView
+            android:id="@+id/score"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="14dp"
+            android:layout_marginTop="59dp"
+            android:layout_toEndOf="@+id/textView"
+            android:text="0" />
+
+    </RelativeLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

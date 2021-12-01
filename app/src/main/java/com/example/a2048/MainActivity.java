@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.a1024.R;
@@ -16,12 +18,21 @@ import java.util.Random;
 public class MainActivity extends AppCompatActivity implements
         GestureDetector.OnGestureListener {
 
-    int score = 0;
+    int scoreN = 0;
 
     GestureDetectorCompat mDetector;
 
+    Button resetMove;
+    TextView score;
     TextView c00, c10, c20, c30, c01, c11, c21, c31, c02, c12, c22, c32, c03, c13, c23, c33;
     TextView[][] cellsMap;
+
+    int[][] previousGameMap = new int[][]{
+            {0, 0, 0, 0},
+            {0, 0, 0, 0},
+            {0, 0, 0, 0},
+            {0, 0, 0, 0}
+    };
 
     int[][] gameMap = new int[][]{
             {0, 0, 0, 0},
@@ -40,10 +51,21 @@ public class MainActivity extends AppCompatActivity implements
         identifyButtons();
 
         generateCell();
-        applyEasySort(gameMap);
+        updateGameStatus(gameMap);
     }
 
     private void identifyButtons() {
+
+        resetMove = (Button) findViewById(R.id.rewind_move);
+        resetMove.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                System.out.println("aaa");
+                resetLastMove();
+            }
+        });
+
+        score = (TextView) findViewById(R.id.score);
+
         c00 = (TextView) findViewById(R.id.button00);
         c10 = (TextView) findViewById(R.id.button10);
         c20 = (TextView) findViewById(R.id.button20);
@@ -72,8 +94,8 @@ public class MainActivity extends AppCompatActivity implements
     private void generateCell() {
 
         boolean spaceAvailable = false;
-        for (int[] gameRow : gameMap ) {
-            for ( int cellValue : gameRow) {
+        for (int[] gameRow : gameMap) {
+            for (int cellValue : gameRow) {
                 if (cellValue == 0) spaceAvailable = true;
             }
         }
@@ -87,24 +109,24 @@ public class MainActivity extends AppCompatActivity implements
                 int rX = randomCell / 4;
                 int rY = randomCell % 4;
 
-                if ( gameMap[rX][rY] == 0 ) {
+                if (gameMap[rX][rY] == 0) {
 
                     int v2or4 = new Random().nextInt(100);
 
-                    if ( v2or4 < 95 ) {
-                        updateCell(rX,rY,2);
-                        score += 2;
+                    if (v2or4 < 95) {
+                        updateCell(rX, rY, 2);
+                        scoreN += 2;
                         break;
                     } else {
-                        updateCell(rX,rY,4);
-                        score += 4;
+                        updateCell(rX, rY, 4);
+                        scoreN += 4;
                         break;
                     }
                 }
             }
 
         } else System.out.println("GAME OVER");
-
+        score.setText(String.valueOf(scoreN));
     }
 
     @Override
@@ -153,7 +175,8 @@ public class MainActivity extends AppCompatActivity implements
     private void updateCell(int x, int y, int newValue) {
         gameMap[x][y] = newValue;
 
-        cellsMap[x][y].setText(String.valueOf(newValue));
+        if (newValue != 0) cellsMap[x][y].setText(String.valueOf(newValue));
+        else cellsMap[x][y].setText("");
         cellsMap[x][y].setBackgroundColor(getNumberColor(newValue));
     }
 
@@ -163,22 +186,26 @@ public class MainActivity extends AppCompatActivity implements
 
         switch (direction) {
             case "N":
-                for (int x = 0; x < 4 ; x++) {
-                    for ( int y = 0 ; y < 4 ; y++ ) easySort[x][y] = gameMap[y][3-x];
+                for (int x = 0; x < 4; x++) {
+                    for (int y = 0; y < 4; y++) easySort[x][y] = gameMap[y][3 - x];
                 }
                 break;
             case "E":
-                for (int x = 0; x < 4 ; x++) {
-                    for ( int y = 0 ; y < 4 ; y++ ) easySort[x][y] = gameMap[x][3-y];
+                for (int x = 0; x < 4; x++) {
+                    for (int y = 0; y < 4; y++) easySort[x][y] = gameMap[x][3 - y];
                 }
                 break;
             case "S":
-                for (int x = 0; x < 4 ; x++) {
-                    for ( int y = 0 ; y < 4 ; y++ ) easySort[x][y] = gameMap[3-y][x];
+                for (int x = 0; x < 4; x++) {
+                    for (int y = 0; y < 4; y++) easySort[x][y] = gameMap[3 - y][x];
                 }
                 break;
             case "W":
-                easySort = gameMap;
+                for (int x = 0; x < gameMap.length; x++) {
+                    for (int y = 0; y < gameMap[x].length; y++) {
+                        easySort[x][y] = gameMap[x][y];
+                    }
+                }
                 break;
         }
 
@@ -188,26 +215,30 @@ public class MainActivity extends AppCompatActivity implements
 
         switch (direction) {
             case "N":
-                for (int x = 0; x < 4 ; x++) {
-                    for ( int y = 0 ; y < 4 ; y++ ) finalEasySort[x][y] = easySort[3-y][x];
+                for (int x = 0; x < 4; x++) {
+                    for (int y = 0; y < 4; y++) finalEasySort[x][y] = easySort[3 - y][x];
                 }
                 break;
             case "E":
-                for (int x = 0; x < 4 ; x++) {
-                    for ( int y = 0 ; y < 4 ; y++ ) finalEasySort[x][y] = easySort[x][3-y];
+                for (int x = 0; x < 4; x++) {
+                    for (int y = 0; y < 4; y++) finalEasySort[x][y] = easySort[x][3 - y];
                 }
                 break;
             case "S":
-                for (int x = 0; x < 4 ; x++) {
-                    for ( int y = 0 ; y < 4 ; y++ ) finalEasySort[x][y] = easySort[y][3-x];
+                for (int x = 0; x < 4; x++) {
+                    for (int y = 0; y < 4; y++) finalEasySort[x][y] = easySort[y][3 - x];
                 }
                 break;
             case "W":
-                finalEasySort = easySort;
+                for (int x = 0; x < easySort.length; x++) {
+                    for (int y = 0; y < easySort[x].length; y++) {
+                        finalEasySort[x][y] = easySort[x][y];
+                    }
+                }
                 break;
         }
 
-        applyEasySort(finalEasySort);
+        updateGameStatus(finalEasySort);
 
     }
 
@@ -242,7 +273,7 @@ public class MainActivity extends AppCompatActivity implements
 
     }
 
-    private void linearMovement( int[][] easySort ){
+    private void linearMovement(int[][] easySort) {
 
         for (int[] move : easySort) {
 
@@ -253,32 +284,46 @@ public class MainActivity extends AppCompatActivity implements
 
                 actionPerformed = false;
 
-                for ( int i = 0; i < 4 ; i++) {
-                    if ( i != 0 ) {
-                        if ( move[i-1] == move[i] && cellsFusionated[i-1] == false ) {
-                            move[i-1] += move[i-1];
-                            move[i] = 0;
-                            cellsFusionated[i-1] = true;
-                            actionPerformed = true;
-                        } else if ( move[i] != 0 && move[i-1] == 0 ) {
-                            move[i-1] = move[i];
-                            move[i] = 0;
-                            cellsFusionated[i-1] = cellsFusionated[i];
-                            actionPerformed = true;
-                        }
+                for (int i = 1; i < 4; i++) {
+                    if (move[i - 1] == move[i] && cellsFusionated[i - 1] == false) {
+                        move[i - 1] += move[i - 1];
+                        move[i] = 0;
+                        cellsFusionated[i - 1] = true;
+                        actionPerformed = true;
+                    } else if (move[i] != 0 && move[i - 1] == 0) {
+                        move[i - 1] = move[i];
+                        move[i] = 0;
+                        cellsFusionated[i - 1] = cellsFusionated[i];
+                        cellsFusionated[i] = false;
+                        actionPerformed = true;
                     }
+
                 }
             }
         }
     }
 
-    private void applyEasySort(int[][] easySort) {
-        for (int x = 0 ; x < 4 ; x++) {
-            for (int y = 0 ; y < 4 ; y++) {
-                updateCell(x,y,easySort[x][y]);
+    private void updateGameStatus(int[][] easySort) {
+        //Save last game status
+        for (int x = 0; x < gameMap.length; x++) {
+            for (int y = 0; y < gameMap[x].length; y++) {
+                previousGameMap[x][y] = gameMap[x][y];
             }
         }
 
+        for (int x = 0; x < 4; x++) {
+            for (int y = 0; y < 4; y++) {
+                updateCell(x, y, easySort[x][y]);
+            }
+        }
+    }
+
+    private void resetLastMove() {
+        for (int x = 0; x < 4; x++) {
+            for (int y = 0; y < 4; y++) {
+                updateCell(x, y, previousGameMap[x][y]);
+            }
+        }
     }
 
 
