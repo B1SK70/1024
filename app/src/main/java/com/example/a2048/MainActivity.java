@@ -35,10 +35,10 @@ public class MainActivity extends AppCompatActivity implements
     };
 
     int[][] gameMap = new int[][]{
-            {0, 0, 0, 0},
-            {0, 0, 0, 0},
-            {0, 0, 0, 0},
-            {0, 0, 0, 0}
+            {2, 2, 2, 2},
+            {4, 4, 4, 4},
+            {8, 8, 8, 8},
+            {16, 16, 16, 16}
     };
 
 
@@ -115,11 +115,9 @@ public class MainActivity extends AppCompatActivity implements
 
                     if (v2or4 < 95) {
                         updateCell(rX, rY, 2);
-                        scoreN += 2;
                         break;
                     } else {
                         updateCell(rX, rY, 4);
-                        scoreN += 4;
                         break;
                     }
                 }
@@ -277,27 +275,32 @@ public class MainActivity extends AppCompatActivity implements
 
         for (int[] move : easySort) {
 
-            boolean[] cellsFusionated = new boolean[4];
+            boolean[] cellsFusionated = { false, false, false, false };
 
             boolean actionPerformed = true;
             while (actionPerformed) {
-
                 actionPerformed = false;
-
                 for (int i = 1; i < 4; i++) {
-                    if (move[i - 1] == move[i] && cellsFusionated[i - 1] == false) {
+
+                    if (move[i - 1] == move[i] && cellsFusionated[i - 1] == false && cellsFusionated[i] == false) {
                         move[i - 1] += move[i - 1];
+                        scoreN += move[i - 1];
                         move[i] = 0;
                         cellsFusionated[i - 1] = true;
+                        cellsFusionated[i] = false;
+
                         actionPerformed = true;
+
                     } else if (move[i] != 0 && move[i - 1] == 0) {
+
                         move[i - 1] = move[i];
                         move[i] = 0;
                         cellsFusionated[i - 1] = cellsFusionated[i];
                         cellsFusionated[i] = false;
-                        actionPerformed = true;
-                    }
 
+                        actionPerformed = true;
+
+                    }
                 }
             }
         }
