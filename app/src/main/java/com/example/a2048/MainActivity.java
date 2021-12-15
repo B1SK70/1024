@@ -27,20 +27,14 @@ public class MainActivity extends AppCompatActivity implements
     TextView c00, c10, c20, c30, c01, c11, c21, c31, c02, c12, c22, c32, c03, c13, c23, c33;
     TextView[][] cellsMap;
 
-    int[][] previousGameMap = new int[][]{
+    int[][] gameMap = new int[][]{
             {0, 0, 0, 0},
             {0, 0, 0, 0},
             {0, 0, 0, 0},
             {0, 0, 0, 0}
     };
 
-    int[][] gameMap = new int[][]{
-            {2, 2, 2, 2},
-            {4, 4, 4, 4},
-            {8, 8, 8, 8},
-            {16, 16, 16, 16}
-    };
-
+    LastStatus lastStatus = new LastStatus();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,8 +44,8 @@ public class MainActivity extends AppCompatActivity implements
 
         identifyButtons();
 
-        generateCell();
-        updateGameStatus(gameMap);
+        updateGameStatus(gameMap,scoreN);
+
     }
 
     private void identifyButtons() {
@@ -59,7 +53,6 @@ public class MainActivity extends AppCompatActivity implements
         resetMove = (Button) findViewById(R.id.rewind_move);
         resetMove.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                System.out.println("aaa");
                 resetLastMove();
             }
         });
@@ -122,9 +115,7 @@ public class MainActivity extends AppCompatActivity implements
                     }
                 }
             }
-
         } else System.out.println("GAME OVER");
-        score.setText(String.valueOf(scoreN));
     }
 
     @Override
@@ -155,8 +146,6 @@ public class MainActivity extends AppCompatActivity implements
         }
 
         moveCells(direction);
-        generateCell();
-
         return true;
     }
 
@@ -207,7 +196,7 @@ public class MainActivity extends AppCompatActivity implements
                 break;
         }
 
-        linearMovement(easySort);
+        int newScore = linearMovement(easySort,scoreN);
 
         int[][] finalEasySort = new int[4][4];
 
@@ -236,7 +225,8 @@ public class MainActivity extends AppCompatActivity implements
                 break;
         }
 
-        updateGameStatus(finalEasySort);
+
+        updateGameStatus(finalEasySort,newScore);
 
     }
 
@@ -261,17 +251,19 @@ public class MainActivity extends AppCompatActivity implements
                 return getResources().getColor(R.color.cell_256);
             case 512:
                 return getResources().getColor(R.color.cell_512);
-            /*case 1024:
+            case 1024:
                 return getResources().getColor(R.color.cell_1024);
             case 2048:
-                return getResources().getColor(R.color.cell_2048);*/
+                return getResources().getColor(R.color.cell_2048);
             default:
                 return getResources().getColor(R.color.empty_cell);
         }
 
     }
 
-    private void linearMovement(int[][] easySort) {
+    private int linearMovement(int[][] easySort,int scoreN) {
+
+        int newScore = scoreN;
 
         for (int[] move : easySort) {
 
@@ -284,7 +276,7 @@ public class MainActivity extends AppCompatActivity implements
 
                     if (move[i - 1] == move[i] && cellsFusionated[i - 1] == false && cellsFusionated[i] == false) {
                         move[i - 1] += move[i - 1];
-                        scoreN += move[i - 1];
+                        newScore += move[i - 1];
                         move[i] = 0;
                         cellsFusionated[i - 1] = true;
                         cellsFusionated[i] = false;
@@ -304,29 +296,40 @@ public class MainActivity extends AppCompatActivity implements
                 }
             }
         }
+        return newScore;
     }
 
-    private void updateGameStatus(int[][] easySort) {
+    private void updateGameStatus(int[][] easySort,int newScore) {
         //Save last game status
         for (int x = 0; x < gameMap.length; x++) {
             for (int y = 0; y < gameMap[x].length; y++) {
-                previousGameMap[x][y] = gameMap[x][y];
+                lastStatus.map[x][y] = gameMap[x][y];
             }
         }
+        lastStatus.score = scoreN;
+
 
         for (int x = 0; x < 4; x++) {
             for (int y = 0; y < 4; y++) {
                 updateCell(x, y, easySort[x][y]);
             }
         }
+        scoreN = newScore;
+        score.setText(String.valueOf(scoreN));
+
+        generateCell();
     }
 
     private void resetLastMove() {
         for (int x = 0; x < 4; x++) {
             for (int y = 0; y < 4; y++) {
-                updateCell(x, y, previousGameMap[x][y]);
+                updateCell(x, y, lastStatus.map[x][y]);
             }
         }
+
+        scoreN = lastStatus.score;
+        score.setText(String.valueOf(scoreN));
+
     }
 
 

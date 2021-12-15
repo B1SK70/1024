@@ -15,6 +15,8 @@
     <color name="cell_128">#ffff4d</color>
     <color name="cell_256">#ffff1a</color>
     <color name="cell_512">#ff9900</color>
+    <color name="cell_1024">#FFD700</color>
+    <color name="cell_2048">#b9f2ff</color>
 <!-- ///////////////////////////////////////////////// -->
 
 <!-- ///////////////////////////////////////////////// -->
